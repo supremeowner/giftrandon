@@ -1,0 +1,64 @@
+/* === UI Overrides injected by FigmaGPT (safe, non-breaking) ===
+   Uses Static colors (no theme variables).
+   You can remove this file if needed; components read design tokens from :root.
+*/
+
+
+/* Tab Bar (393x50) */
+.tab-bar {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* per spec */
+  background: var(--tabbar-bg);
+  opacity: 1;
+}
+
+/* Tab Bar buttons */
+.tab-bar .tab-btn {
+  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--tg-text);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Active tab */
+.tab-bar .tab-btn.is-active,
+.tab-bar .tab-btn[aria-current="page"] {
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+}
+
+/* Cards background mapped to secondary bg */
+.card,
+.card-surface {
+  background: var(--app-card);
+}
+
+/* CTA button: "попробовать/получить подарок" (361x50) */
+.cta-primary {
+  width: 100%;
+  max-width: 361px;
+  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+  border: none;
+  cursor: pointer;
+}
+/* Price in gift cards: center + tighter star spacing */
+.price-row { display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+.star-icon { width: 16px; height: 16px; }

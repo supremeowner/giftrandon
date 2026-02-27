@@ -1,0 +1,401 @@
+.page {
+  padding: 16px 16px 96px;
+}
+
+.content {
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  width: 100%;
+}
+
+.avatarSection {
+  width: min(329px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-top: 16px;
+}
+
+.historyButton {
+  border: 0;
+  background: transparent;
+  color: var(--tg-link-color, #007aff);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: min(329px, 100%);
+  min-height: 24px;
+  font-family: "SF Pro", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  font-size: 17px;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+  font-weight: 510;
+  cursor: pointer;
+}
+
+.historyButtonIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profileName {
+  width: 100%;
+  max-width: 280px;
+  min-height: 30px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  font-size: 24px;
+  line-height: 30px;
+  letter-spacing: -0.43px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--tg-text, hsl(var(--foreground)));
+}
+
+.profileXp {
+  margin: 0;
+  margin-top: 2px;
+  margin-bottom: 10px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  font-size: 17px;
+  line-height: 22px;
+  letter-spacing: -0.44px;
+  text-align: center;
+  font-weight: 400;
+  color: var(--tg-text, hsl(var(--foreground)));
+}
+
+.profileXpValue {
+  min-width: 10px;
+  margin-left: 4px;
+}
+
+.profileXpIcon {
+  width: 21px;
+  height: 21px;
+  object-fit: contain;
+  margin-left: -1px;
+}
+
+.profileXpUnit {
+  margin-left: 1px;
+}
+
+.historyPreviewWrap {
+  width: 100%;
+  max-width: 361px;
+  height: 310px;
+  border-radius: 10px;
+  padding: 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.historyPreviewPlaceholder {
+  width: 100%;
+  max-width: 361px;
+  margin: 0 auto;
+  height: 262px;
+  border-radius: 12px;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #2c2c2e;
+}
+
+.historyPreviewAnimation {
+  width: 160px;
+  height: 160px;
+}
+
+.historyPreviewText {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  font-size: 17px;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+  text-align: center;
+  font-weight: 400;
+  color: #ffffff;
+}
+
+.historyPage {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: calc(
+    max(
+      env(safe-area-inset-top, 0px),
+      var(--tg-viewport-content-safe-area-inset-top, var(--tg-content-safe-area-inset-top, 0px))
+    ) + 66px
+  ) 16px 28px;
+  overflow-y: auto;
+  animation: history-enter 240ms ease-out both;
+}
+
+.historyHeader {
+  width: 100%;
+  max-width: calc(560px - 32px);
+  min-height: 132px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 0 16px;
+  margin: 0 auto;
+}
+
+.historyTitle {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -0.43px;
+  text-align: center;
+  font-weight: 590;
+  color: var(--tg-text, #ffffff);
+}
+
+.historySubtitle {
+  margin: 0;
+  font-family: "SF Pro", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  font-size: 17px;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+  text-align: center;
+  font-weight: 400;
+  color: #8e8e93;
+}
+
+.emptyHistory {
+  width: 100%;
+  max-width: 361px;
+  height: 240px;
+  margin: 0 auto;
+  border-radius: 12px;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #2c2c2e;
+}
+
+.emptyHistoryAnimation {
+  width: 180px;
+  height: 180px;
+}
+
+.emptyHistoryText {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  font-size: 17px;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+  text-align: center;
+  font-weight: 400;
+  color: #ffffff;
+}
+
+.actionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 16px;
+}
+
+
+.actionsByDate {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.actionDateHeader {
+  margin: 0;
+  padding: 0 0 12px;
+  text-transform: uppercase;
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 400;
+  color: #8e8e93;
+}
+
+
+
+.actionCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  position: relative;
+  animation: action-enter 260ms ease both;
+}
+
+.actionIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: color-mix(in srgb, #8e8e93 20%, transparent);
+}
+
+.actionGiftIconImage {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.actionBody {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.actionOperation {
+  margin: 0;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--tg-text-color, hsl(var(--foreground)));
+}
+
+.actionTime {
+  margin: 0;
+  font-size: 13px;
+  line-height: 16px;
+  color: #8e8e93;
+}
+
+.actionMeta {
+  margin-left: auto;
+  padding-top: 1px;
+  min-height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 4px;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--tg-text-color, hsl(var(--foreground)));
+}
+
+.actionPrice {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "SF Pro", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  font-size: 15px;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+  font-weight: 510;
+  color: var(--tg-text-color, hsl(var(--foreground)));
+}
+
+.actionPriceIcon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+
+.actionDivider {
+  position: absolute;
+  left: 52px;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: rgba(60, 60, 67, 0.36);
+}
+
+.skeletonIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.skeletonBody {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.skeletonLine {
+  width: min(220px, 70%);
+  height: 14px;
+  border-radius: 6px;
+}
+
+.skeletonLineShort {
+  width: min(150px, 50%);
+  height: 12px;
+  border-radius: 6px;
+}
+
+.skeletonMeta {
+  width: 54px;
+  height: 16px;
+  border-radius: 6px;
+  margin-left: auto;
+  margin-top: 6px;
+}
+
+@keyframes history-enter {
+  from {
+    transform: translateX(18px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes action-enter {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

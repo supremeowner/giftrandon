@@ -1,0 +1,253 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.header {
+  padding: 20px 16px 8px;
+}
+
+.inputWrapper {
+  position: relative;
+  color: var(--leaderboard-search-text, #3c3c4399);
+  font-size: 17px;
+}
+
+.inputWrapper * {
+  color: inherit;
+  font-size: inherit;
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  pointer-events: none;
+  display: flex;
+  gap: 8px;
+  align-content: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.placeholder::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background-color: #8e8e93;
+  mask-image: url("./search.svg");
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-image: url("./search.svg");
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  display: block;
+}
+
+.inputWrapper input {
+  background-color: var(--leaderboard-search-bg, var(--app-card));
+  border-radius: 10px;
+  padding: 7px;
+  border-style: none;
+  outline: none;
+  display: block;
+  width: 100%;
+  color: var(--tg-text) !important;
+}
+
+:global(:root[data-theme="dark"]) {
+  --leaderboard-search-bg: #00000080;
+  --leaderboard-search-text: #8e8e93;
+}
+
+:global(:root[data-theme="light"]) {
+  --leaderboard-search-bg: #efeff3;
+  --leaderboard-search-text: #3c3c4399;
+}
+
+.inputWrapper input:not([value=""]) + .placeholder {
+  color: transparent !important;
+}
+
+.inputWrapper input:focus {
+  padding-left: 32px;
+}
+
+.inputWrapper input:focus + .placeholder {
+  padding-left: 7px;
+  justify-content: flex-start;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.scrollbox {
+  flex: 1;
+  padding-bottom: 92px;
+  color: var(--tg-text);
+}
+
+.row {
+  display: flex;
+  padding: 8px 10px 8px 16px;
+  gap: 12px;
+  align-items: center;
+  position: relative;
+  background: transparent;
+  border: none;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.row:not(:last-child)::after {
+  position: absolute;
+  bottom: 0;
+  left: calc(16px + 40px + 12px);
+  background-color: #3c3c435c;
+  height: 1px;
+  content: "";
+  right: 16px;
+}
+
+.body {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 12px;
+  flex: 1;
+}
+
+.scrollbox .name {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif;
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: -0.44px;
+  line-height: 22px;
+  display: flex;
+  align-items: center;
+}
+
+.scrollbox .name span {
+  font-weight: 500;
+  margin-left: 6px;
+  font-size: 11px;
+  color: hsl(var(--muted-foreground));
+  background-color: #8e8e9333;
+  line-height: 14px;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-radius: 4px;
+}
+
+.scrollbox .count {
+  color: #007aff;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.1px;
+}
+
+.value {
+  width: 22px;
+  min-width: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: hsl(var(--muted-foreground));
+  font-weight: 510;
+  font-size: 15px;
+  letter-spacing: -0.43px;
+}
+
+.noItems {
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+  padding-top: 16px;
+}
+
+.noItemsTitle {
+  font-size: 15px;
+}
+
+.loader {
+  padding: 24px 16px;
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+}
+
+.emptyState {
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.emptyTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.emptySubtitle {
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 6px;
+}
+
+.emptyHint {
+  color: hsl(var(--muted-foreground));
+  font-size: 13px;
+}
+
+.searchSkeleton {
+  width: 100%;
+  height: 34px;
+  border-radius: 10px;
+}
+
+.skeletonRow {
+  display: flex;
+  padding: 8px 10px 8px 16px;
+  gap: 12px;
+  align-items: center;
+}
+
+.skeletonAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.skeletonBody {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 12px;
+}
+
+.skeletonName {
+  width: min(220px, 70%);
+  height: 16px;
+  border-radius: 6px;
+}
+
+.skeletonXp {
+  width: min(120px, 40%);
+  height: 12px;
+  border-radius: 6px;
+}
+
+.skeletonValue {
+  width: 22px;
+  height: 16px;
+  border-radius: 6px;
+  margin-left: auto;
+}

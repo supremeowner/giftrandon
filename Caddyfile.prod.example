@@ -1,0 +1,23 @@
+# Replace `your-domain.com` with your domain.
+# IMPORTANT: Telegram Mini App must be opened via HTTPS.
+#
+# After `npm run build`, Vite outputs static files to: /mnt/data/star_gifter_work/star-gifter-main/dist
+# This Caddy config serves the built фронт as static files.
+
+your-domain.com {
+    root * /mnt/data/star_gifter_work/star-gifter-main/dist
+    encode zstd gzip
+    file_server
+
+    # Proxy API requests to the bot's aiohttp server (API_PORT, default 8080).
+    handle_path /api/* {
+        reverse_proxy localhost:8080
+    }
+
+    # Optional security headers
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}

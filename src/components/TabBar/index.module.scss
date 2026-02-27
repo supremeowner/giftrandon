@@ -1,0 +1,62 @@
+.tabbar {
+  z-index: 20;
+  background-color: var(--tabbar-bg);
+  backdrop-filter: blur(100px);
+  -webkit-backdrop-filter: blur(100px);
+
+  position: fixed;
+  left: 50%;
+  right: auto;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(100vw, 560px);
+  padding-left: max(12px, var(--safe-area-left, 0px), var(--tg-viewport-content-safe-area-inset-left, 0px));
+  padding-right: max(12px, var(--safe-area-right, 0px), var(--tg-viewport-content-safe-area-inset-right, 0px));
+
+  display: flex;
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 500;
+  user-select: none;
+
+  box-sizing: border-box;
+  padding-top: 6px;
+  padding-bottom: calc(18px + max(var(--safe-area-bottom, 0px), var(--tg-viewport-content-safe-area-inset-bottom, 0px)));
+}
+
+.item {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+
+  color: #959595;
+  border: 0;
+  background: transparent;
+  touch-action: manipulation;
+  transition: color 220ms ease;
+}
+
+.icon {
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+  object-fit: contain;
+  filter: grayscale(1) brightness(0.65);
+  transition: filter 220ms ease;
+}
+
+.label {
+  line-height: 12px;
+}
+
+.active {
+  color: #0080fa;
+
+  .icon {
+    filter: brightness(0) saturate(100%) invert(41%) sepia(100%) saturate(2920%) hue-rotate(197deg) brightness(102%) contrast(98%);
+  }
+}

@@ -1,0 +1,1442 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  
+  /* shadcn theme vars */
+  /* shadcn theme vars */
+  --background: 240 3% 12%;          /* ~ #1C1C1E */
+  --foreground: 0 0% 100%;
+  --card: 240 2% 18%;                /* ~ #2C2C2E */
+  --card-foreground: 0 0% 100%;
+  --popover: 240 3% 12%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 211 100% 50%;           /* ~ #007AFF */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 2% 18%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 240 2% 18%;
+  --muted-foreground: 240 5% 65%;
+  --accent: 240 2% 18%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 240 3% 22%;
+  --input: 240 3% 22%;
+  --ring: 211 100% 50%;
+/* default theme vars are overridden by SettingsProvider */
+  --app-bg: rgba(28, 28, 30, 1);
+  --app-card: rgba(44, 44, 46, 1);
+  --tabbar-bg: rgba(30, 30, 30, 0.75);
+  --tg-text: #FFFFFF;
+  --tg-button: #007AFF;
+  --tg-button-text: #FFFFFF;
+}
+
+
+:root[data-theme="light"] {
+  --app-bg: #FFFFFF;
+  --app-card: #EFEFF3;
+  --tabbar-bg: rgba(241, 241, 242, 0.75);
+  --tg-text: #000000;
+}
+
+:root[data-theme="dark"] {
+  --app-bg: rgba(28, 28, 30, 1);
+  --app-card: rgba(44, 44, 46, 1);
+  --tabbar-bg: rgba(30, 30, 30, 0.75);
+  --tg-text: #FFFFFF;
+}
+
+/* styles */
+
+@layer base {
+  
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  img,
+  svg,
+  a {
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+  }
+
+  html {
+    @apply h-full;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+  }
+
+  body {
+    @apply h-full font-sans antialiased;
+    background: var(--app-bg);
+    color: var(--tg-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+    overscroll-behavior: none;
+    overflow: hidden;
+  }
+
+  #root {
+    @apply h-full;
+    min-height: var(--tg-viewport-stable-height, 100dvh);
+  }
+
+  /* iOS specific optimizations */
+  @supports (-webkit-touch-callout: none) {
+    body {
+      min-height: -webkit-fill-available;
+    }
+  }
+}
+
+@layer components {
+  /* App container */
+  .app-container {
+    @apply flex flex-col mx-auto relative;
+    width: min(100%, 560px);
+    min-height: var(--tg-viewport-stable-height, 100dvh);
+    padding-top: calc(max(var(--safe-area-top, 0px), var(--tg-viewport-content-safe-area-inset-top, 0px)) + 12px);
+    padding-left: max(12px, var(--safe-area-left, 0px), var(--tg-viewport-content-safe-area-inset-left, 0px));
+    padding-right: max(12px, var(--safe-area-right, 0px), var(--tg-viewport-content-safe-area-inset-right, 0px));
+    background: var(--app-bg);
+  }
+
+  /* Main scrollable area should not go under the tabbar (92px) */
+  .content-area {
+    @apply flex-1 overflow-y-auto relative;
+    min-height: 0;
+    padding-bottom: calc(92px + max(var(--safe-area-bottom, 0px), var(--tg-viewport-content-safe-area-inset-bottom, 0px)));
+  }
+
+  .page-transition {
+    animation: page-fade-in 280ms ease;
+  }
+
+  @keyframes page-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Gift cards (115×160, radius 12, color from tma) */
+  .gift-card {
+    position: relative;
+    width: 115px;
+    height: 160px;
+    border-radius: 12px;
+    padding: 10px 10px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: var(--app-card);
+    transition: transform 200ms ease;
+  }
+
+  .gift-card .star-badge--center {
+    margin-top: auto;
+  }
+
+  .gift-card-selected {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--tg-button) 85%, transparent);
+  }
+
+  /* Bottom Tabbar (393×92 container, buttons row 393×50) */
+  .bottom-tabbar {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 393px;
+    height: 80px;
+    padding-top: 6px;
+    padding-bottom: calc(12px + var(--safe-area-bottom));
+    background: var(--tabbar-bg);
+    backdrop-filter: blur(100px);
+    -webkit-backdrop-filter: blur(100px);
+    z-index: 50;
+  }
+
+  .tabbar-buttons {
+    width: 393px;
+    height: 46px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  .tabbar-indicator {
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: calc(12px + var(--safe-area-bottom));
+    width: calc(100% / 3);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--tg-text) 12%, transparent);
+    transform: translateX(calc(var(--active-index, 0) * 100%));
+    transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .tabbar-buttons {
+    position: relative;
+  }
+
+  .tabbar-button[data-press="1"] .tabbar-label {
+    animation: tabbar-label 220ms ease;
+  }
+
+  @keyframes tabbar-label {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.92); }
+    100% { transform: scale(1); }
+  }
+
+  .tabbar-button {
+    width: 98.25px;
+    height: 46px;
+    min-width: 46px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 4px;
+    opacity: 0.4;
+    color: var(--tg-text);
+    border-radius: 10px;
+    transition: opacity 150ms ease, transform 150ms ease, background-color 150ms ease;
+  }
+
+  .tabbar-button:active {
+    transform: scale(0.98);
+  }
+
+  .tabbar-button.active {
+    background: transparent;
+    opacity: 1;
+  }
+
+  .tabbar-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .tabbar-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 100%;
+    letter-spacing: 0.1px;
+    text-align: center;
+  }
+
+  /* Primary action button (361×50, radius 12, padding 10, gap 10) */
+  .primary-button {
+    width: 100%;
+    max-width: 361px;
+    height: 50px;
+    border-radius: 12px;
+    padding: 10px;
+    gap: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--tg-button);
+    color: var(--tg-button-text);
+    border: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: transform 150ms ease, opacity 150ms ease;
+  }
+
+  .primary-button:active {
+    transform: scale(0.99);
+  }
+
+  .primary-button:disabled {
+    opacity: 0.9;
+    cursor: not-allowed;
+  }
+
+  .secondary-button {
+    width: 100%;
+    max-width: 361px;
+    height: 50px;
+    border-radius: 12px;
+    padding: 10px;
+    gap: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--app-card) 85%, transparent);
+    color: var(--tg-text);
+    border: 1px solid color-mix(in srgb, var(--app-card) 70%, transparent);
+    font-weight: 600;
+    font-size: 16px;
+    transition: transform 150ms ease, opacity 150ms ease;
+  }
+
+  .secondary-button:active {
+    transform: scale(0.99);
+  }
+
+  .secondary-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+.win-result-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    z-index: 30;
+    background: color-mix(in srgb, var(--app-bg) 70%, transparent);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 420ms ease;
+    padding: 16px 16px 24px;
+  }
+
+  .win-result-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .win-result-panel {
+    width: min(380px, 100%);
+    border-radius: 28px;
+    padding: 28px 18px 24px;
+    background: transparent;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    transform: translateY(24px) scale(0.98);
+    opacity: 0;
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 420ms ease;
+  }
+
+  .win-result-overlay.is-visible .win-result-panel {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .win-result-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    padding: 8px 10px 0;
+  }
+
+  .win-result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 6px calc(env(safe-area-inset-bottom, 0px) + 6px);
+  }
+
+  .win-result-primary-button,
+  .win-result-secondary-button {
+    width: 100%;
+    height: 52px;
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 17px;
+    transition: transform 180ms ease, opacity 180ms ease, background 180ms ease;
+  }
+
+  .win-result-primary-button {
+    background: color-mix(in srgb, var(--app-card) 90%, transparent);
+    color: var(--tg-text);
+    border: 1px solid color-mix(in srgb, var(--app-card) 65%, transparent);
+  }
+
+  .win-result-secondary-button {
+    background: color-mix(in srgb, var(--app-card) 80%, transparent);
+    color: var(--tg-text);
+    border: 1px solid color-mix(in srgb, var(--app-card) 55%, transparent);
+  }
+
+  .win-result-primary-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Touch feedback (kept for existing UI) */
+  .touch-feedback {
+    @apply transition-all duration-150 active:scale-95 active:opacity-80;
+  }
+
+  /* Existing decorative components used around the app */
+  }
+
+
+:root[data-theme="light"] {
+  --app-bg: #FFFFFF;
+  --app-card: #EFEFF3;
+  --tabbar-bg: rgba(241, 241, 242, 0.75);
+  --tg-text: #000000;
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+:root[data-theme="dark"] {
+  --app-bg: rgba(28, 28, 30, 1);
+  --app-card: rgba(44, 44, 46, 1);
+  --tabbar-bg: rgba(30, 30, 30, 0.75);
+  --tg-text: #FFFFFF;
+}
+
+/* styles */
+html, body {
+  background: var(--app-bg);
+  color: var(--tg-text);
+}
+#root {
+  min-height: 100vh;
+  background: var(--app-bg);
+}
+
+/* === Static theme base (requested) === */
+html, body {
+  background: var(--app-bg) !important;
+  color: var(--tg-text);
+}
+#root {
+  min-height: 100vh;
+  background: var(--app-bg) !important;
+}
+
+/* === Bottom tab bar active state: icon+text only (no filled pill) === */
+.tabbar-button.active {
+    background: transparent;
+    opacity: 1;
+  }
+.tabbar-button.active .tabbar-label {
+  color: var(--tg-button) !important;
+  opacity: 1 !important;
+}
+.tabbar-button.active .tabbar-icon {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* Make icons/text default muted */
+.tabbar-button .tabbar-label,
+.tabbar-button .tabbar-icon {
+  opacity: 0.4;
+}
+.tabbar-button.active .tabbar-icon,
+.tabbar-button.active .tabbar-label {
+  opacity: 1;
+}
+/* Recolor active tab SVG <img> via CSS filter (approx #007AFF) */
+.tabbar-button .tabbar-icon {
+  opacity: 0.4;
+  filter: grayscale(1) brightness(1.6);
+}
+.tabbar-button.active .tabbar-icon {
+  opacity: 1;
+  filter: invert(33%) sepia(91%) saturate(2874%) hue-rotate(199deg) brightness(99%) contrast(103%);
+}
+.tabbar-button .tabbar-label { opacity: 0.4; }
+.tabbar-button.active .tabbar-label { opacity: 1; color: var(--tg-button); }
+/* Top price tabs (star selection) */
+.tg-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 6px auto 24px;
+  padding: 0;
+  width: 100%;
+  max-width: 393px;
+  background: transparent;
+  overflow-x: auto;
+}
+.tg-tab {
+  height: 44px;             /* чуть больше */
+  padding: 0 14px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;                 /* звезда ближе к цифрам */
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--tg-text) 8%, transparent);
+  color: var(--tg-text);
+  white-space: nowrap;
+}
+.tg-tab--active {
+  background: color-mix(in srgb, var(--app-card) 60%, transparent);
+  border-color: color-mix(in srgb, var(--tg-text) 12%, transparent);
+}
+.tg-tab__star {
+  display: inline-block;
+}
+
+/* Header background (requested) */
+.tg-header {
+  height: 56px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--tg-header-bg, var(--app-bg));
+}
+
+/* Top price tabs: centered rounded pill like Quick Gift */
+.tg-tab {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+}
+.tg-tab--active {
+  background: var(--app-card); /* pressed/active */
+}
+
+/* Base background */
+html, body {
+  background: var(--app-bg) !important;
+  color: var(--tg-text);
+}
+#root {
+  min-height: 100vh;
+  background: var(--app-bg) !important;
+}
+
+/* Top price tabs: no container background, active pill only */
+.tg-tab {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--tg-text) 10%, transparent);
+  background: transparent;
+}
+.tg-tab--active {
+  background: color-mix(in srgb, var(--app-card) 60%, transparent);
+  border-color: color-mix(in srgb, var(--tg-text) 12%, transparent);
+}
+
+/* Star icon sizing: match digits */
+.star-icon,
+.tg-tab__star,
+.star-badge .star-icon {
+  width: 1em !important;
+  height: 1em !important;
+}
+.price-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+/* Gift card price badge centered */
+.star-badge--center {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* === FORCE OVERRIDES (ensure changes are visible) === */
+:root {
+  /* default theme vars are overridden by SettingsProvider */
+  --app-bg: rgba(28, 28, 30, 1);
+  --app-card: rgba(44, 44, 46, 1);
+  --tabbar-bg: rgba(30, 30, 30, 0.75);
+}
+
+/* App background */
+html, body, #root {
+  background: var(--app-bg) !important;
+}
+
+/* === Final UI tuning (match reference) === */
+
+/* Top star price tabs: no container bg, only active pill, larger star+digits */
+
+.tg-tab {
+  height: 44px !important;
+  padding: 0 20px !important;
+  border-radius: 9999px !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--tg-text) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+}
+
+.tg-tab--active {
+  background: var(--app-card) !important;
+}
+
+.tg-tab__text {
+  line-height: 1 !important;
+}
+
+/* Price badge on cards: pill like reference, star == digit size */
+.star-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 6px 12px !important;
+  border-radius: 9999px !important;
+  background: rgba(255, 193, 7, 0.18) !important;
+  color: #FFC107 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+/* Gift cards */
+.gift-card {
+  background: var(--gift-card-bg) !important;
+}
+
+/* Bottom tabbar */
+.bottom-tabbar {
+  background: var(--tabbar-bg) !important;
+  backdrop-filter: blur(100px) !important;
+  -webkit-backdrop-filter: blur(100px) !important;
+}
+
+/* Header */
+.tg-header {
+  background: var(--tg-header-bg, var(--app-bg)) !important;
+}
+
+/* Center star+price badge */
+.star-badge--center {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+/* =========================
+   FINAL OVERRIDES (Reference-like)
+   ========================= */
+
+/* Top star amount tabs (match reference sizing) */
+
+.tg-tab {
+  /* Requested: no pill for inactive tabs */
+  height: 44px !important;
+  padding: 0 10px !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--tg-text) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  font-size: 18px !important;
+  /* Requested: bold digits only in tabs */
+  font-weight: 700 !important;
+  line-height: 1 !important;
+}
+
+.tg-tab--active {
+  /* Requested: pill only when active */
+  padding: 0 20px !important;
+  border-radius: 9999px !important;
+  background: var(--app-card) !important;
+}
+
+.tg-tab__text {
+  font-size: 1em !important;
+  line-height: 1 !important;
+}
+
+/* Price badge in cards (match reference pill) */
+.star-badge {
+  background: rgba(255, 193, 7, 0.18) !important;
+  color: #FFC107 !important;
+  /* Requested: tighter pill around price */
+  padding: 4px 10px !important;
+  border-radius: 9999px !important;
+  /* Requested: star + digit a bit bigger, not bold */
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+}
+
+/* Price rows: star = digit size everywhere */
+.price-row {
+  gap: 6px !important;
+}
+
+/* Gift card icons a bit larger (closer to reference) */
+.gift-card img {
+  image-rendering: auto;
+}
+
+.gift-icon,
+.button-price-icon,
+.star-icon {
+  -webkit-touch-callout: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* =========================
+   REQUESTED TWEAKS (latest)
+   ========================= */
+
+/* Top star amount tabs: no pills for inactive, pill only for active */
+.tg-tab {
+  height: 44px !important;
+  padding: 0 10px !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  gap: 4px !important;
+  font-size: 18px !important;
+  font-weight: 700 !important; /* requested: bold only here */
+  line-height: 1 !important;
+}
+.tg-tab--active {
+  padding: 0 18px !important;
+  border-radius: 9999px !important;
+  background: color-mix(in srgb, var(--app-card) 85%, transparent) !important;
+}
+
+/* Price badge: tighter pill, star and digits same size, digits not bold */
+.star-badge {
+  padding: 4px 10px !important;
+  border-radius: 9999px !important;
+  gap: 6px !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+}
+
+.price-row { gap: 6px !important; }
+
+
+/* === Overrides: Star tabs, pills, and crypto-bot-contest TabBar === */
+
+/* Star amount tabs: bigger star, tabbar-like press animation */
+.tg-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--tg-text);
+  border: 1px solid transparent;
+  transition: transform 150ms ease, opacity 150ms ease;
+  font-size: 22px !important;
+  transform: none !important;
+}
+.tg-tab:active { transform: scale(0.96) !important; }
+.tg-tab:focus,
+.tg-tab:focus-visible {
+  outline: none;
+}
+.tg-tab__text {
+  font-size: 1em;
+  line-height: 18px;
+  font-weight: 700; /* only tabs bold */
+}
+.tg-tab--active {
+  background: var(--tg-button);
+  border-color: color-mix(in srgb, var(--tg-button) 70%, transparent);
+}
+.tg-tab--active .tg-tab__text,
+.tg-tab--active .tg-tab__star {
+  animation: tg-tab-press 220ms ease;
+}
+@keyframes tg-tab-press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+/* Price pills: tight by default */
+.star-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #473f32;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.star-badge--tight {
+  padding: 5px 9px;
+}
+.star-badge--big {
+  padding: 7px 12px;
+}
+/* Disable press-move for tabs specifically (keep cards ok) */
+.tg-tab.touch-feedback {
+  transform: none !important;
+}
+
+/* Crypto-bot-contest-like tabbar (no Store) */
+.cbc-tabbar {
+  z-index: 20;
+  background-color: var(--tabbar-bg);
+  backdrop-filter: blur(100px);
+  -webkit-backdrop-filter: blur(100px);
+
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 500;
+  user-select: none;
+  padding-bottom: calc(28px + var(--safe-area-bottom, 0px));
+  padding-top: 6px;
+}
+
+.cbc-tabbar__item {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  color: #959595;
+  border: 0;
+  background: transparent;
+  transition: color 180ms ease;
+}
+
+.cbc-tabbar__iconWrap {
+  min-height: 26px;
+  max-height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cbc-tabbar__lottie {
+  width: 26px;
+  height: 26px;
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.15));
+}
+.cbc-tabbar__item[data-active] {
+  color: #0080fa;
+}
+.cbc-tabbar__item[data-active] .cbc-tabbar__label {
+  animation: cbc-label 250ms;
+}
+.cbc-tabbar__item[data-active] .cbc-tabbar__iconWrap {
+  animation: cbc-icon 200ms;
+}
+@keyframes cbc-label {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+@keyframes cbc-icon {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* Switch (profile) like contest */
+.cbc-switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  background: color-mix(in srgb, var(--tg-text) 6%, transparent);
+  border-radius: 12px;
+  padding: 4px;
+  overflow: hidden;
+}
+.cbc-switch__item {
+  z-index: 1;
+  border: 0;
+  background: transparent;
+  color: var(--tg-hint, #cfcfcf);
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.cbc-switch__item.is-active {
+  color: var(--tg-text);
+}
+.cbc-switch__thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 3);
+  border-radius: 10px;
+  background: var(--app-card);
+  transform: translateX(calc(var(--cbc-switch-index, 1) * 100%));
+  transition: transform 220ms ease;
+}
+
+/* Profile card base */
+.profile-card {
+  background: var(--app-card);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+/* === Price lock: prevent layout shift for tabs and button === */
+.tg-tab {
+  min-width: 88px;
+  padding: 0 16px !important;
+  box-sizing: border-box;
+}
+
+.tg-tab--active {
+  padding: 0 16px !important;
+}
+
+.tg-tab__text {
+  min-width: 3ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.primary-button .price-value {
+  display: inline-block;
+  min-width: 3ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* === REF pill style + star sizes === */
+.star-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width: fit-content;
+  padding:8px 14px;
+  border-radius:999px;
+  background: #473f32;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.star-badge--tight{ padding:7px 12px; }
+.star-badge--big{ padding:9px 16px; }
+
+/* === Final contest palette + price pill alignment === */
+:root {
+  --tg-button: #0080FA;
+  --tg-button-text: #FFFFFF;
+  --tg-hint: #959595;
+  --gift-card-bg: #f5f5f5;
+  --price-pill-bg: #3A3230;
+  --price-pill-border: #3A3230;
+  --price-pill-text: #FFFFFF;
+}
+
+:root[data-theme="light"] {
+  --app-bg: #FFFFFF;
+  --app-card: #EFEFF3;
+  --tabbar-bg: rgba(241, 241, 242, 0.75);
+  --tg-text: #000000;
+  --tg-hint: #959595;
+  --gift-card-bg: #f5f5f5;
+  --price-pill-bg: #F9EAC0;
+  --price-pill-border: #F9EAC0;
+  --price-pill-text: #3A3230;
+}
+
+:root[data-theme="dark"] {
+  --app-bg: #1C1C1E;
+  --app-card: #2C2C2E;
+  --tabbar-bg: rgba(30, 30, 30, 0.75);
+  --tg-text: #FFFFFF;
+  --tg-hint: #8E8E93;
+  --gift-card-bg: #2C2C2E;
+  --price-pill-bg: #3a3230;
+  --price-pill-border: #3a3230;
+  --price-pill-text: #FFFFFF;
+}
+
+.cbc-tabbar__item {
+  color: var(--tg-hint) !important;
+}
+
+.cbc-tabbar__item[data-active] {
+  color: var(--tg-button) !important;
+}
+
+.tg-tab {
+  gap: 2px !important;
+  flex-direction: row !important;
+  white-space: nowrap !important;
+  height: 40px !important;
+  padding: 0 12px !important;
+  font-size: 17px !important;
+  min-width: 80px !important;
+}
+
+.tg-tab__text {
+  line-height: 1 !important;
+}
+
+.star-icon,
+.tg-tab__star {
+  width: 1em !important;
+  height: 1em !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+.price-row {
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+.star-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: fit-content !important;
+  padding: 6px 12px !important;
+  gap: 4px !important;
+  border-radius: 999px !important;
+  background: var(--price-pill-bg) !important;
+  border: 1px solid var(--price-pill-border) !important;
+  color: var(--price-pill-text) !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+}
+
+.star-badge--center {
+  width: fit-content !important;
+  display: flex !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
+}
+
+.star-badge--tight {
+  padding: 4px 9px !important;
+  gap: 3px !important;
+}
+.star-badge--tight .star-icon {
+  width: 1.65em !important;
+  height: 1.65em !important;
+}
+.star-badge--bottom {
+  padding: 3px 7px !important;
+  gap: 3px !important;
+}
+
+.chance-text {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85em;
+  font-weight: 400;
+  color: color-mix(in srgb, var(--tg-text) 50%, transparent);
+  letter-spacing: 0.01em;
+}
+
+/* === Latest requested adjustments === */
+.tg-tabs {
+  margin-bottom: 28px !important;
+}
+
+.tg-tab {
+  height: 40px !important;
+  padding: 0 14px !important;
+  font-size: 18px !important;
+}
+
+.star-icon,
+.button-price-icon {
+  width: 1.2em !important;
+  height: 1.2em !important;
+}
+
+.tg-tab__star {
+  width: 1.7em !important;
+  height: 1.7em !important;
+}
+
+.price-row {
+  gap: 2px !important;
+}
+
+.price-row .star-icon {
+  width: 1.2em !important;
+  height: 1.2em !important;
+}
+
+.win-prize-card .star-icon {
+  width: 1.2em !important;
+  height: 1.2em !important;
+}
+
+.star-badge--tight .star-icon {
+  width: 1.9em !important;
+  height: 1.9em !important;
+}
+
+.star-icon,
+.tg-tab__star {
+  color: #ffc107 !important;
+}
+
+.primary-button {
+  height: 54px !important;
+  width: 100% !important;
+  max-width: none !important;
+  padding: 12px 14px !important;
+  border-radius: 14px !important;
+  font-size: 17px !important;
+  gap: 12px !important;
+  background: #567bf0 !important;
+}
+
+.button-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.button-content--animated {
+  animation: button-fade-in 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.button-loading-lottie {
+  width: 34px;
+  height: 34px;
+}
+
+.button-content--gift {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-price {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 2px;
+  gap: 0 !important;
+  white-space: nowrap;
+}
+
+.button-price-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 1px;
+}
+
+.star-badge--big .star-icon {
+  width: 1.15em !important;
+  height: 1.15em !important;
+}
+
+.demo-switch {
+  height: 28px !important;
+  width: 50px !important;
+  transition: background-color 260ms cubic-bezier(0.22, 1, 0.36, 1), border-color 260ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 260ms ease;
+}
+
+.demo-switch[data-state="checked"],
+.demo-switch[data-state="unchecked"] {
+  border-width: 2px !important;
+}
+
+.demo-switch span {
+  height: 22px !important;
+  width: 22px !important;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 260ms ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+}
+
+.demo-switch[data-state="checked"] span {
+  transform: translateX(22px) !important;
+}
+
+.chance-text {
+  margin-top: 10px;
+}
+
+@keyframes button-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.win-result-overlay {
+  transition: opacity 440ms ease, visibility 440ms ease;
+  visibility: hidden;
+}
+
+.win-result-overlay.is-visible {
+  visibility: visible;
+}
+
+.win-result-panel {
+  transition: transform 440ms cubic-bezier(0.22, 1, 0.36, 1), opacity 440ms ease;
+}
+
+.gpu-accelerated {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* === TGUI-like skeletons === */
+:root {
+  --tgui--bg_color: var(--app-bg);
+  --tgui--secondary_bg_color: var(--app-card);
+  --tgui--z-index--simple: 1;
+  --tgui--z-index--skeleton: 2;
+}
+
+.tgui-skeleton {
+  position: relative;
+  overflow: hidden;
+}
+
+.tgui-skeleton--visible::before,
+.tgui-skeleton--visible::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.tgui-skeleton--visible::before {
+  z-index: var(--tgui--z-index--simple, 1);
+  background: var(--tgui--secondary_bg_color, var(--app-card));
+}
+
+.tgui-skeleton--visible:not(.tgui-skeleton--no-animation)::after {
+  z-index: var(--tgui--z-index--skeleton, 2);
+  background-color: var(--tgui--bg_color, var(--app-bg));
+  animation: tgui-skeleton-fade 1.8s linear infinite;
+}
+
+@keyframes tgui-skeleton-fade {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* === Adaptive layout fixes (all devices + stable star tabs) === */
+.app-container {
+  width: 100% !important;
+  max-width: min(100vw, 560px) !important;
+  min-height: var(--tg-viewport-stable-height, 100dvh) !important;
+  height: var(--tg-viewport-stable-height, 100dvh) !important;
+  padding-top: calc(max(var(--safe-area-top, 0px), var(--tg-viewport-content-safe-area-inset-top, 0px)) + 12px) !important;
+  padding-left: max(var(--safe-area-left, 0px), var(--tg-viewport-content-safe-area-inset-left, 0px), 0px);
+  padding-right: max(var(--safe-area-right, 0px), var(--tg-viewport-content-safe-area-inset-right, 0px), 0px);
+}
+
+.content-area {
+  overflow-x: hidden;
+  padding-bottom: calc(96px + max(var(--safe-area-bottom, 0px), var(--tg-viewport-content-safe-area-inset-bottom, 0px))) !important;
+}
+
+.cbc-tabbar {
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%);
+  width: min(100vw, 560px);
+  padding-bottom: calc(18px + max(var(--safe-area-bottom, 0px), var(--tg-viewport-content-safe-area-inset-bottom, 0px))) !important;
+}
+
+.tg-tabs {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  width: fit-content !important;
+  max-width: 100% !important;
+  gap: 10px !important;
+  margin: 8px auto 18px !important;
+  padding: 0 8px !important;
+  overflow: visible !important;
+}
+
+.tg-tab,
+.tg-tab--active {
+  width: auto !important;
+  min-width: 78px !important;
+  justify-self: center !important;
+  height: 40px !important;
+  padding: 0 8px !important;
+  border-radius: 999px !important;
+  gap: 4px !important;
+  justify-content: center !important;
+  font-size: clamp(15px, 4vw, 18px) !important;
+  font-weight: 400 !important;
+}
+
+.tg-tab__star {
+  width: clamp(30px, 7vw, 36px) !important;
+  height: clamp(30px, 7vw, 36px) !important;
+  flex-shrink: 0;
+}
+
+.tg-tab__text {
+  line-height: 1 !important;
+  font-weight: 400 !important;
+}
+
+@media (max-width: 360px) {
+  .tg-tabs {
+    padding: 0 8px !important;
+    gap: 6px !important;
+  }
+
+  .tg-tab,
+  .tg-tab--active {
+    min-width: 70px !important;
+    padding: 0 6px !important;
+    font-size: 16px !important;
+  }
+}
+
+.app-preloader {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--app-bg) 88%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.app-preloader--compact {
+  z-index: 26;
+  background: color-mix(in srgb, var(--app-bg) 82%, transparent);
+}
+
+.app-preloader__spinner {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: 3px solid color-mix(in srgb, var(--tg-text) 25%, transparent);
+  border-top-color: var(--tg-button);
+  animation: app-preloader-spin 900ms linear infinite;
+}
+
+@keyframes app-preloader-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Star tabs: animated active pill + no press animation */
+.tg-tabs {
+  position: relative;
+  isolation: isolate;
+}
+
+.tg-tabs > .tg-tab--active {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: 0;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--tg-button);
+  border: none;
+  box-shadow: none;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.tg-tabs > .tg-tab--active.is-animated {
+  will-change: left, width;
+  transition: left 420ms cubic-bezier(0.22, 1, 0.36, 1), width 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease;
+}
+
+.tg-tab {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+  border-color: transparent !important;
+  transition: color 220ms ease !important;
+  transform: none !important;
+}
+
+.tg-tab:active {
+  transform: none !important;
+}
+
+.tg-tab.is-selected .tg-tab__text,
+.tg-tab.is-selected .tg-tab__star,
+.tg-tab--active .tg-tab__text,
+.tg-tab--active .tg-tab__star {
+  animation: none !important;
+}
+
+.tg-tab:disabled {
+  opacity: 0.55 !important;
+  cursor: not-allowed;
+}
