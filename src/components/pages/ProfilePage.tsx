@@ -17,9 +17,7 @@ import diamondSvg from "@/assets/gifts/diamond.svg";
 import { useRequiredTelegramWebApp } from "@/contexts/TelegramWebAppContext";
 import { getTelegramUser } from "@/hooks/useTelegramWebApp";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
 import { getActionHistory } from "@/lib/actionHistory";
-import actionsIcon from "./actions.svg";
 import historyPlaceholderAnimation from "@/assets/gifts/animation/istoria.json";
 import giftAnimation from "@/assets/gifts/animation/giftanimation.json";
 import styles from "./ProfilePage.module.scss";
@@ -169,18 +167,9 @@ export const ProfilePage: FC = () => {
           </header>
 
           {isHistoryLoading && historyActionsByDate.length === 0 ? (
-            <div className={styles.actionsList}>
-              {Array.from({ length: 4 }).map((_, index) => (
-                <div key={`history-skeleton-${index}`} className={styles.actionCard}>
-                  <Skeleton className={styles.skeletonIcon} />
-                  <div className={styles.skeletonBody}>
-                    <Skeleton className={styles.skeletonLine} />
-                    <Skeleton className={styles.skeletonLineShort} />
-                  </div>
-                  <Skeleton className={styles.skeletonMeta} />
-                  {index !== 3 && <span className={styles.actionDivider} aria-hidden="true" />}
-                </div>
-              ))}
+            <div className={styles.emptyHistory}>
+              <Lottie animationData={historyPlaceholderAnimation} loop autoplay className={styles.emptyHistoryAnimation} />
+              <p className={styles.emptyHistoryText}>{"\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430..."}</p>
             </div>
           ) : historyActionsByDate.length === 0 ? (
             <div className={styles.emptyHistory}>
@@ -239,7 +228,7 @@ export const ProfilePage: FC = () => {
             <span className={styles.profileXpUnit}>xp</span>
           </p>
           <button type="button" className={styles.historyButton} onClick={() => setIsHistoryOpen(true)}>
-            <img src={actionsIcon} alt="" aria-hidden="true" className={styles.historyButtonIcon} />
+            <span className={styles.historyButtonIcon} aria-hidden="true" />
             История действий ›
           </button>
 

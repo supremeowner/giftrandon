@@ -10,7 +10,7 @@ import { useRequiredTelegramWebApp } from "@/contexts/TelegramWebAppContext";
 import { buildApiUrl } from "@/lib/api";
 import { fetchTelegramJson } from "@/lib/telegramApi";
 import loadingAnimation from "@/assets/gifts/animation/loading.json";
-import { GIFTS_CATALOG, type GiftId } from "@/components/gifts/constants";
+import { GIFTS_CATALOG, GIFT_IMAGE_SOURCES, type GiftId } from "@/components/gifts/constants";
 
 const prices = [25, 50, 100];
 
@@ -114,7 +114,21 @@ export const GiftsPage: FC = () => {
   const [wonPrize, setWonPrize] = useState<{ id: GiftId; icon: GiftIcon; label: string; price: number } | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [loadedIcons, setLoadedIcons] = useState<Record<string, boolean>>({});
+  const [loadedIcons, setLoadedIcons] = useState<Record<string, boolean>>(() => {
+    if (typeof Image === "undefined") {
+      return {};
+    }
+    const preloaded: Record<string, boolean> = {};
+    GIFT_IMAGE_SOURCES.forEach((src) => {
+      if (!src) return;
+      const img = new Image();
+      img.src = src;
+      if (img.complete && img.naturalWidth > 0) {
+        preloaded[src] = true;
+      }
+    });
+    return preloaded;
+  });
   const rouletteRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -173,6 +187,43 @@ export const GiftsPage: FC = () => {
   const markIconLoaded = useCallback((src: string) => {
     setLoadedIcons((prev) => (prev[src] ? prev : { ...prev, [src]: true }));
   }, []);
+
+  useEffect(() => {
+    if (typeof Image === "undefined") return;
+    let isCancelled = false;
+    const images: HTMLImageElement[] = [];
+
+    GIFT_IMAGE_SOURCES.forEach((src) => {
+      if (!src) return;
+      const image = new Image();
+      image.src = src;
+
+      const markLoaded = () => {
+        if (!isCancelled) {
+          markIconLoaded(src);
+        }
+      };
+
+      if (image.complete && image.naturalWidth > 0) {
+        markLoaded();
+        return;
+      }
+
+      image.onload = markLoaded;
+      image.onerror = () => {
+        // keep skeleton visible
+      };
+      images.push(image);
+    });
+
+    return () => {
+      isCancelled = true;
+      images.forEach((image) => {
+        image.onload = null;
+        image.onerror = null;
+      });
+    };
+  }, [markIconLoaded]);
 
   const clearTimers = () => {
     if (spinTimeoutRef.current) {
@@ -541,41 +592,42 @@ export const GiftsPage: FC = () => {
               const iconLoaded = Boolean(loadedIcons[gift.icon.src]);
 
               return (
-                <div
+                <Skeleton
                   key={index}
+                  visible={!iconLoaded}
                   className="flex-shrink-0 rounded-[12px] px-[10px] relative"
                   style={{
                     width: rouletteCardWidth,
                     height: baseCardHeight,
                     backgroundColor: "var(--gift-card-bg)",
-                    boxShadow: "none"
+                    boxShadow: "none",
+                    ["--tgui--secondary_bg_color" as string]: "var(--gift-card-bg)",
                   }}
                 >
-                  {/* Centered icon - takes most of the space */}
-                  <div className="absolute inset-0 flex items-center justify-center pb-8">
-                    <Skeleton
-                      visible={!iconLoaded}
-                      className="inline-flex items-center justify-center w-[116px] h-[116px] rounded-[16px]"
-                    >
+                  <div className={iconLoaded ? "opacity-100" : "opacity-0"}>
+                    {/* Centered icon - takes most of the space */}
+                    <div className="absolute inset-0 flex items-center justify-center pb-12">
                       <img
                         src={gift.icon.src}
                         alt={gift.label}
-                        className={`gift-icon w-full h-full drop-shadow-lg ${iconLoaded ? "opacity-100" : "opacity-0"}`}
+                        className="gift-icon w-[124px] h-[124px] drop-shadow-lg"
+                        loading="eager"
+                        decoding="async"
                         onLoad={() => markIconLoaded(gift.icon.src)}
                         onError={(event) => {
                           event.currentTarget.style.opacity = "0";
                         }}
                       />
-                    </Skeleton>
+                    </div>
+                    {/* Price badge centered at bottom */}
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 star-badge star-badge--center star-badge--tight">
+                      <span className="price-row">
+                        <img src={StarSvg} alt="star" className="star-icon" style={{ width: "1.9em", height: "1.9em" }} />
+                        <span className="text-[15px] font-normal">{gift.price}</span>
+                      </span>
+                    </div>
                   </div>
-                {/* Price badge centered at bottom */}
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 star-badge star-badge--center star-badge--tight">
-                  <span className="price-row">
-                    <img src={StarSvg} alt="star" className="star-icon" style={{ width: "1.9em", height: "1.9em" }} />
-                    <span className="text-[15px] font-normal">{gift.price}</span>
-                  </span>
-                </div>
-                </div>
+                </Skeleton>
               );
             })}
           </div>
@@ -598,6 +650,8 @@ export const GiftsPage: FC = () => {
                     src={wonPrize.icon.src}
                     alt={wonPrize.label}
                     className={`gift-icon w-full h-full drop-shadow-xl ${wonPrizeIconLoaded ? "opacity-100" : "opacity-0"}`}
+                    loading="eager"
+                    decoding="async"
                     onLoad={() => markIconLoaded(wonPrize.icon.src)}
                     onError={(event) => {
                       event.currentTarget.style.opacity = "0";
@@ -674,44 +728,45 @@ export const GiftsPage: FC = () => {
             const iconLoaded = Boolean(loadedIcons[prize.icon.src]);
 
             return (
-              <div
+              <Skeleton
                 key={index}
+                visible={!iconLoaded}
                 className="win-prize-card flex-shrink-0 rounded-[12px] relative"
                 style={{
                   scrollSnapAlign: "start",
                   width: winCardWidth,
                   height: winCardHeight,
                   backgroundColor: "var(--gift-card-bg)",
-                  boxShadow: "none"
+                  boxShadow: "none",
+                  ["--tgui--secondary_bg_color" as string]: "var(--gift-card-bg)",
                 }}
               >
-                {/* Centered icon */}
-                <div className="absolute inset-0 flex items-center justify-center pb-14">
-                  <Skeleton
-                    visible={!iconLoaded}
-                    className="inline-flex items-center justify-center w-[78px] h-[78px] rounded-[14px]"
-                  >
-                    <img
-                      src={prize.icon.src}
-                      alt={prize.label}
-                      className={`gift-icon w-full h-full ${iconLoaded ? "opacity-100" : "opacity-0"}`}
-                      onLoad={() => markIconLoaded(prize.icon.src)}
+                <div className={iconLoaded ? "opacity-100" : "opacity-0"}>
+                  {/* Centered icon */}
+                <div className="absolute inset-0 flex items-center justify-center pb-16">
+                  <img
+                    src={prize.icon.src}
+                    alt={prize.label}
+                    className="gift-icon w-[86px] h-[86px]"
+                    loading="eager"
+                    decoding="async"
+                    onLoad={() => markIconLoaded(prize.icon.src)}
                       onError={(event) => {
                         event.currentTarget.style.opacity = "0";
                       }}
                     />
-                  </Skeleton>
+                  </div>
+                  {/* Price badge centered */}
+                  <div className="absolute bottom-7 left-1/2 -translate-x-1/2 star-badge star-badge--center star-badge--bottom">
+                    <span className="price-row">
+                      <img src={StarSvg} alt="star" className="star-icon" />
+                      <span className="text-[15px] font-normal">{prize.price}</span>
+                    </span>
+                  </div>
+                  {/* Chance at bottom center */}
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 chance-text">{prize.chance}</span>
                 </div>
-                {/* Price badge centered */}
-                <div className="absolute bottom-7 left-1/2 -translate-x-1/2 star-badge star-badge--center star-badge--bottom">
-                  <span className="price-row">
-                    <img src={StarSvg} alt="star" className="star-icon" />
-                    <span className="text-[15px] font-normal">{prize.price}</span>
-                  </span>
-                </div>
-                {/* Chance at bottom center */}
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 chance-text">{prize.chance}</span>
-              </div>
+              </Skeleton>
             );
           })}
         </div>
