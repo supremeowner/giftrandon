@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Lottie from "lottie-react";
 import { PriceTabs } from "../PriceTabs";
 import StarSvg from "@/assets/gifts/star-badge.svg";
