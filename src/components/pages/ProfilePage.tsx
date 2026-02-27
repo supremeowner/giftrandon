@@ -169,7 +169,6 @@ export const ProfilePage: FC = () => {
           {isHistoryLoading && historyActionsByDate.length === 0 ? (
             <div className={styles.emptyHistory}>
               <Lottie animationData={historyPlaceholderAnimation} loop autoplay className={styles.emptyHistoryAnimation} />
-              <p className={styles.emptyHistoryText}>{"\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430..."}</p>
             </div>
           ) : historyActionsByDate.length === 0 ? (
             <div className={styles.emptyHistory}>

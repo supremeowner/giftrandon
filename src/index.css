@@ -1468,6 +1468,53 @@ html, body, #root {
 }
 
 .star-badge--bottom .star-icon {
-  width: 1.4em !important;
-  height: 1.4em !important;
+  width: 1.6em !important;
+  height: 1.6em !important;
+}
+
+/* === Disable press/dim effects on switch and star tabs === */
+.demo-switch,
+.tg-tab {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.demo-switch:active,
+.demo-switch:focus,
+.demo-switch:focus-visible,
+.demo-switch:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.demo-switch:active * ,
+.demo-switch:focus * ,
+.demo-switch:focus-visible * ,
+.demo-switch:focus-within * {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+.tg-tab:active,
+.tg-tab:focus,
+.tg-tab:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  background: transparent !important;
+}
+
+.tg-tab:active .tg-tab__text,
+.tg-tab:active .tg-tab__star,
+.tg-tab:focus .tg-tab__text,
+.tg-tab:focus .tg-tab__star,
+.tg-tab:focus-visible .tg-tab__text,
+.tg-tab:focus-visible .tg-tab__star {
+  filter: none !important;
+  opacity: 1 !important;
+  animation: none !important;
 }

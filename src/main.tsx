@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { TelegramWebAppProvider } from "./contexts/TelegramWebAppProvider";
-import { CRITICAL_GIFT_IMAGE_SOURCES } from "./components/gifts/constants";
+import { GIFT_IMAGE_SOURCES } from "./components/gifts/constants";
 import ButtonIconSvg from "@/assets/gifts/svg-image-1.svg";
 import "./index.css";
 
@@ -17,7 +17,7 @@ const preloadImages = (images: string[]) => {
   });
 };
 
-preloadImages([...CRITICAL_GIFT_IMAGE_SOURCES, ButtonIconSvg]);
+preloadImages([...GIFT_IMAGE_SOURCES, ButtonIconSvg]);
 
 export const RootApp = () => {
   useEffect(() => {
