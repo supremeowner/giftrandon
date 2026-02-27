@@ -1518,3 +1518,45 @@ html, body, #root {
   opacity: 1 !important;
   animation: none !important;
 }
+
+/* === Final hard override for iOS/Telegram touch darkening === */
+.demo-switch,
+.demo-switch *,
+.tg-tab,
+.tg-tab * {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none;
+}
+
+.demo-switch,
+.demo-switch:is(:hover, :active, :focus, :focus-visible, :focus-within) {
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.demo-switch:is(:hover, :active, :focus, :focus-visible, :focus-within) *,
+.demo-switch input:is(:hover, :active, :focus, :focus-visible) + span {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+.tg-tab,
+.tg-tab:is(:hover, :active, :focus, :focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  background: transparent !important;
+  transition: none !important;
+}
+
+.tg-tab:is(:hover, :active, :focus, :focus-visible) .tg-tab__text,
+.tg-tab:is(:hover, :active, :focus, :focus-visible) .tg-tab__star {
+  filter: none !important;
+  opacity: 1 !important;
+  animation: none !important;
+}
