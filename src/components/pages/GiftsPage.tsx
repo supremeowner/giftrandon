@@ -1,10 +1,9 @@
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import Lottie from "lottie-react";
 import { PriceTabs } from "../PriceTabs";
 import StarSvg from "@/assets/gifts/star-badge.svg";
 import ButtonIcon from "@/assets/gifts/svg-image-1.svg";
 import { Switch } from "@/components/ui/switch";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useAdaptivity } from "@/hooks/useAdaptivity";
 import { useRequiredTelegramWebApp } from "@/contexts/TelegramWebAppContext";
 import { buildApiUrl } from "@/lib/api";
@@ -114,11 +113,11 @@ export const GiftsPage: FC = () => {
   const [wonPrize, setWonPrize] = useState<{ id: GiftId; icon: GiftIcon; label: string; price: number } | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [loadedIcons, setLoadedIcons] = useState<Record<string, boolean>>({});
   const rouletteRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const spinTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rouletteGestureUnlockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoScrollFrameRef = useRef<number | null>(null);
   const autoScrollOffsetRef = useRef(0);
   const autoScrollLastTimestampRef = useRef<number | null>(null);
@@ -157,7 +156,6 @@ export const GiftsPage: FC = () => {
     () => createExtendedRoulette(rouletteGifts),
     [rouletteGifts]
   );
-  const wonPrizeIconLoaded = wonPrize ? Boolean(loadedIcons[wonPrize.icon.src]) : false;
 
   const baseCardWidth = sizeX === "compact" ? 154 : 174;
   const baseCardHeight = sizeX === "compact" ? 182 : 206;
@@ -170,10 +168,6 @@ export const GiftsPage: FC = () => {
 
   const isBusy = isSpinning || isProcessingPayment;
 
-  const markIconLoaded = useCallback((src: string) => {
-    setLoadedIcons((prev) => (prev[src] ? prev : { ...prev, [src]: true }));
-  }, []);
-
   const clearTimers = () => {
     if (spinTimeoutRef.current) {
       clearTimeout(spinTimeoutRef.current);
@@ -184,6 +178,17 @@ export const GiftsPage: FC = () => {
       clearTimeout(closeTimeoutRef.current);
       closeTimeoutRef.current = null;
     }
+  };
+
+  const lockTabSwitchDuringRouletteGesture = () => {
+    document.body.dataset.rouletteGestureLock = "1";
+    if (rouletteGestureUnlockTimeoutRef.current) {
+      clearTimeout(rouletteGestureUnlockTimeoutRef.current);
+    }
+    rouletteGestureUnlockTimeoutRef.current = setTimeout(() => {
+      delete document.body.dataset.rouletteGestureLock;
+      rouletteGestureUnlockTimeoutRef.current = null;
+    }, 420);
   };
 
   const stopAutoScroll = useCallback(() => {
@@ -245,6 +250,12 @@ export const GiftsPage: FC = () => {
         closeTimeoutRef.current = null;
       }
 
+      if (rouletteGestureUnlockTimeoutRef.current) {
+        clearTimeout(rouletteGestureUnlockTimeoutRef.current);
+        rouletteGestureUnlockTimeoutRef.current = null;
+      }
+
+      delete document.body.dataset.rouletteGestureLock;
       stopAutoScroll();
     },
     [stopAutoScroll]
@@ -450,6 +461,11 @@ export const GiftsPage: FC = () => {
     setDemoMode(checked);
   };
 
+  const handlePriceSelect = (price: number) => {
+    if (isBusy) return;
+    setSelectedPrice(price);
+  };
+
   // Button text based on state
   const getButtonContent = () => {
     const contentKey = isBusy ? "spinning" : demoMode ? "demo" : "gift";
@@ -493,8 +509,7 @@ export const GiftsPage: FC = () => {
         <PriceTabs
           prices={prices}
           selectedPrice={selectedPrice}
-          onSelect={setSelectedPrice}
-          disabled={isBusy}
+          onSelect={handlePriceSelect}
         />
       </div>
 
@@ -532,6 +547,9 @@ export const GiftsPage: FC = () => {
           ref={containerRef}
           className="relative overflow-hidden"
           style={{ height: `${baseCardHeight + 18}px` }}
+          onTouchMove={lockTabSwitchDuringRouletteGesture}
+          onTouchEnd={lockTabSwitchDuringRouletteGesture}
+          onTouchCancel={lockTabSwitchDuringRouletteGesture}
         >
           {/* Gradient overlays */}
           <div
@@ -550,12 +568,9 @@ export const GiftsPage: FC = () => {
             style={{ width: "fit-content", gap: `${cardGap}px` }}
           >
             {extendedRoulette.map((gift, index) => {
-              const iconLoaded = Boolean(loadedIcons[gift.icon.src]);
-
               return (
-                <Skeleton
+                <div
                   key={index}
-                  visible={!iconLoaded}
                   className="flex-shrink-0 rounded-[12px] px-[10px] relative"
                   style={{
                     width: rouletteCardWidth,
@@ -565,30 +580,27 @@ export const GiftsPage: FC = () => {
                     ["--tgui--secondary_bg_color" as string]: "var(--gift-card-bg)",
                   }}
                 >
-                  <div className={iconLoaded ? "opacity-100" : "opacity-0"}>
-                    {/* Centered icon - takes most of the space */}
-                    <div className="absolute inset-0 flex items-center justify-center pb-12">
-                      <img
-                        src={gift.icon.src}
-                        alt={gift.label}
-                        className="gift-icon w-[124px] h-[124px] drop-shadow-lg"
-                        loading="eager"
-                        decoding="async"
-                        onLoad={() => markIconLoaded(gift.icon.src)}
-                        onError={(event) => {
-                          event.currentTarget.style.opacity = "0";
-                        }}
-                      />
-                    </div>
-                    {/* Price badge centered at bottom */}
-                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 star-badge star-badge--center star-badge--tight">
-                      <span className="price-row">
-                        <img src={StarSvg} alt="star" className="star-icon" style={{ width: "1.9em", height: "1.9em" }} />
-                        <span className="text-[15px] font-normal">{gift.price}</span>
-                      </span>
-                    </div>
+                  {/* Centered icon - takes most of the space */}
+                  <div className="absolute inset-0 flex items-center justify-center pb-12">
+                    <img
+                      src={gift.icon.src}
+                      alt={gift.label}
+                      className="gift-icon w-[124px] h-[124px] drop-shadow-lg"
+                      loading="eager"
+                      decoding="async"
+                      onError={(event) => {
+                        event.currentTarget.style.opacity = "0";
+                      }}
+                    />
                   </div>
-                </Skeleton>
+                  {/* Price badge centered at bottom */}
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 star-badge star-badge--center star-badge--tight">
+                    <span className="price-row">
+                      <img src={StarSvg} alt="star" className="star-icon" style={{ width: "1.9em", height: "1.9em" }} />
+                      <span className="text-[15px] font-normal">{gift.price}</span>
+                    </span>
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -603,22 +615,18 @@ export const GiftsPage: FC = () => {
           >
             <div className="win-result-panel">
               <div className="win-result-content">
-                <Skeleton
-                  visible={!wonPrizeIconLoaded}
-                  className="inline-flex items-center justify-center w-[120px] h-[120px] rounded-[18px]"
-                >
+                <div className="inline-flex items-center justify-center w-[120px] h-[120px] rounded-[18px]">
                   <img
                     src={wonPrize.icon.src}
                     alt={wonPrize.label}
-                    className={`gift-icon w-full h-full drop-shadow-xl ${wonPrizeIconLoaded ? "opacity-100" : "opacity-0"}`}
+                    className="gift-icon w-full h-full drop-shadow-xl"
                     loading="eager"
                     decoding="async"
-                    onLoad={() => markIconLoaded(wonPrize.icon.src)}
                     onError={(event) => {
                       event.currentTarget.style.opacity = "0";
                     }}
                   />
-                </Skeleton>
+                </div>
                 <p className="text-foreground font-semibold text-2xl">Вы выиграли подарок!</p>
                 <p className="text-muted-foreground text-base leading-relaxed">
                   {spinWasDemo
@@ -686,12 +694,9 @@ export const GiftsPage: FC = () => {
           }}
         >
           {allWinPrizes.map((prize, index) => {
-            const iconLoaded = Boolean(loadedIcons[prize.icon.src]);
-
             return (
-              <Skeleton
+              <div
                 key={index}
-                visible={!iconLoaded}
                 className="win-prize-card flex-shrink-0 rounded-[12px] relative"
                 style={{
                   scrollSnapAlign: "start",
@@ -702,8 +707,7 @@ export const GiftsPage: FC = () => {
                   ["--tgui--secondary_bg_color" as string]: "var(--gift-card-bg)",
                 }}
               >
-                <div className={iconLoaded ? "opacity-100" : "opacity-0"}>
-                  {/* Centered icon */}
+                {/* Centered icon */}
                 <div className="absolute inset-0 flex items-center justify-center pb-16">
                   <img
                     src={prize.icon.src}
@@ -711,23 +715,21 @@ export const GiftsPage: FC = () => {
                     className="gift-icon w-[86px] h-[86px]"
                     loading="eager"
                     decoding="async"
-                    onLoad={() => markIconLoaded(prize.icon.src)}
-                      onError={(event) => {
-                        event.currentTarget.style.opacity = "0";
-                      }}
-                    />
-                  </div>
-                  {/* Price badge centered */}
-                  <div className="absolute bottom-7 left-1/2 -translate-x-1/2 star-badge star-badge--center star-badge--bottom">
-                    <span className="price-row">
-                      <img src={StarSvg} alt="star" className="star-icon" />
-                      <span className="text-[15px] font-normal">{prize.price}</span>
-                    </span>
-                  </div>
-                  {/* Chance at bottom center */}
-                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 chance-text">{prize.chance}</span>
+                    onError={(event) => {
+                      event.currentTarget.style.opacity = "0";
+                    }}
+                  />
                 </div>
-              </Skeleton>
+                {/* Price badge centered */}
+                <div className="absolute bottom-7 left-1/2 -translate-x-1/2 star-badge star-badge--center star-badge--bottom">
+                  <span className="price-row">
+                    <img src={StarSvg} alt="star" className="star-icon" />
+                    <span className="text-[15px] font-normal">{prize.price}</span>
+                  </span>
+                </div>
+                {/* Chance at bottom center */}
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 chance-text">{prize.chance}</span>
+              </div>
             );
           })}
         </div>

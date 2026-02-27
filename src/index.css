@@ -1621,3 +1621,21 @@ html, body, #root {
   outline: none !important;
   box-shadow: none !important;
 }
+
+/* Keep star tabs unchanged when they are temporarily disabled during spin/payment */
+.tg-tab:disabled,
+.tg-tab[disabled] {
+  opacity: 1 !important;
+  color: var(--tg-text) !important;
+  -webkit-text-fill-color: var(--tg-text) !important;
+  filter: none !important;
+}
+
+.tg-tab:disabled .tg-tab__text,
+.tg-tab[disabled] .tg-tab__text,
+.tg-tab:disabled .tg-tab__star,
+.tg-tab[disabled] .tg-tab__star {
+  opacity: 1 !important;
+  filter: none !important;
+  color: inherit !important;
+}

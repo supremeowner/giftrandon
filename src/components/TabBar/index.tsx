@@ -40,8 +40,9 @@ export default function TabBar(props: { value: TabType; onChange: (tab: TabType)
 
   const handleTabSelect = (tab: TabType) => {
     const isRouletteSpinLocked = document.body.dataset.rouletteSpinLock === "1";
+    const isRouletteGestureLocked = document.body.dataset.rouletteGestureLock === "1";
     const recentlyScrolled = Date.now() - lastTouchMoveAtRef.current < 280;
-    if (isRouletteSpinLocked || isScrollGestureRef.current || recentlyScrolled) {
+    if (isRouletteSpinLocked || isRouletteGestureLocked || isScrollGestureRef.current || recentlyScrolled) {
       return;
     }
     onChange(tab);
