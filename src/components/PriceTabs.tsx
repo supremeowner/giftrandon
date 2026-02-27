@@ -11,6 +11,8 @@ interface PriceTabsProps {
 export const PriceTabs: FC<PriceTabsProps> = ({ prices, selectedPrice, onSelect, disabled = false }) => {
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const isScrollGestureRef = useRef(false);
   const [activeStyle, setActiveStyle] = useState<{ width: number; left: number }>({ width: 0, left: 0 });
   const [isAnimated, setIsAnimated] = useState(false);
 
@@ -66,7 +68,30 @@ export const PriceTabs: FC<PriceTabsProps> = ({ prices, selectedPrice, onSelect,
             ref={(el) => {
               buttonRefs.current[index] = el;
             }}
-            onClick={() => {
+            onTouchStart={(event) => {
+              const touch = event.touches[0];
+              if (!touch) return;
+              touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+              isScrollGestureRef.current = false;
+            }}
+            onTouchMove={(event) => {
+              const touch = event.touches[0];
+              const start = touchStartRef.current;
+              if (!touch || !start) return;
+              const dx = Math.abs(touch.clientX - start.x);
+              const dy = Math.abs(touch.clientY - start.y);
+              if (dx > 8 || dy > 8) {
+                isScrollGestureRef.current = true;
+              }
+            }}
+            onTouchCancel={() => {
+              isScrollGestureRef.current = true;
+            }}
+            onClick={(event) => {
+              if (isScrollGestureRef.current) {
+                event.preventDefault();
+                return;
+              }
               if (disabled) return;
               setIsAnimated(true);
               onSelect(price);

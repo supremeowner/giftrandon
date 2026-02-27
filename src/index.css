@@ -1560,3 +1560,38 @@ html, body, #root {
   opacity: 1 !important;
   animation: none !important;
 }
+
+/* Keep top star tabs visually stable while dragging/scrolling on iOS */
+.tg-tab,
+.tg-tab.is-selected,
+.tg-tab:is(:hover, :active, :focus, :focus-visible) {
+  color: var(--tg-text) !important;
+  -webkit-text-fill-color: var(--tg-text) !important;
+}
+
+.tg-tab .tg-tab__star,
+.tg-tab:is(:hover, :active, :focus, :focus-visible) .tg-tab__star {
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* === Compact spacing for spin button price and icon === */
+.button-price {
+  gap: 1px !important;
+  padding-left: 0 !important;
+}
+
+.button-price-icon {
+  margin-right: 0 !important;
+}
+
+.button-price .price-value {
+  min-width: auto !important;
+  text-align: left !important;
+}
+
+.button-price-value {
+  margin-left: 0 !important;
+  line-height: 1 !important;
+}

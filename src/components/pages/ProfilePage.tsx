@@ -17,7 +17,7 @@ import diamondSvg from "@/assets/gifts/diamond.svg";
 import { useRequiredTelegramWebApp } from "@/contexts/TelegramWebAppContext";
 import { getTelegramUser } from "@/hooks/useTelegramWebApp";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getActionHistory } from "@/lib/actionHistory";
+import { getActionHistory, peekActionHistory } from "@/lib/actionHistory";
 import historyPlaceholderAnimation from "@/assets/gifts/animation/istoria.json";
 import giftAnimation from "@/assets/gifts/animation/giftanimation.json";
 import styles from "./ProfilePage.module.scss";
@@ -59,6 +59,13 @@ export const ProfilePage: FC = () => {
 
   useEffect(() => {
     if (!isHistoryOpen) return;
+
+    const cachedHistory = peekActionHistory(webApp.initData);
+    if (cachedHistory) {
+      setHistoryActions(cachedHistory);
+      setIsHistoryLoading(false);
+      return;
+    }
 
     let isCancelled = false;
     setIsHistoryLoading(true);
@@ -223,8 +230,8 @@ export const ProfilePage: FC = () => {
           <div className={styles.profileName}>{displayName}</div>
           <p className={styles.profileXp}>
             У вас есть <span className={styles.profileXpValue}>0</span>
-            <img src={starBadgeSvg} alt="" aria-hidden="true" className={styles.profileXpIcon} loading="lazy" />
             <span className={styles.profileXpUnit}>xp</span>
+            <img src={starBadgeSvg} alt="" aria-hidden="true" className={styles.profileXpIcon} loading="lazy" />
           </p>
           <button type="button" className={styles.historyButton} onClick={() => setIsHistoryOpen(true)}>
             <span className={styles.historyButtonIcon} aria-hidden="true" />

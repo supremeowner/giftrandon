@@ -469,7 +469,7 @@ export const GiftsPage: FC = () => {
         <span className="text-lg">Испытать удачу!</span>
         <span className="button-price">
           <img src={ButtonIcon} alt="" className="button-price-icon" />
-          <span className="text-lg font-semibold price-value">{selectedPrice}</span>
+          <span className="text-lg font-semibold price-value button-price-value">{selectedPrice}</span>
         </span>
       </span>
     );

@@ -85,7 +85,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
   font-size: 17px;
   line-height: 22px;
@@ -101,10 +101,10 @@
 }
 
 .profileXpIcon {
-  width: 21px;
-  height: 21px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
-  margin-left: -1px;
+  margin-left: 3px;
 }
 
 .profileXpUnit {

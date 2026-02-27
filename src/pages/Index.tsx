@@ -6,11 +6,12 @@ import { LeaderboardPage } from "@/components/pages/LeaderboardPage";
 import { ProfilePage } from "@/components/pages/ProfilePage";
 import { useTelegramWebAppContext } from "@/contexts/TelegramWebAppContext";
 import { AdaptivityProvider } from "@/hooks/AdaptivityProvider";
+import { preloadActionHistory } from "@/lib/actionHistory";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabType>("gifts");
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-  const { isTelegramContext } = useTelegramWebAppContext();
+  const { isTelegramContext, webApp } = useTelegramWebAppContext();
   const baselineHeightRef = useRef(0);
 
   useEffect(() => {
@@ -42,6 +43,11 @@ const Index = () => {
       window.removeEventListener("resize", detectKeyboard);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isTelegramContext || !webApp?.initData) return;
+    void preloadActionHistory(webApp.initData);
+  }, [isTelegramContext, webApp?.initData]);
 
   if (!isTelegramContext) {
     return <OpenInTelegramPage />;
