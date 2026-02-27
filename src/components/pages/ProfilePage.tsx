@@ -230,8 +230,8 @@ export const ProfilePage: FC = () => {
           <div className={styles.profileName}>{displayName}</div>
           <p className={styles.profileXp}>
             У вас есть <span className={styles.profileXpValue}>0</span>
-            <span className={styles.profileXpUnit}>xp</span>
             <img src={starBadgeSvg} alt="" aria-hidden="true" className={styles.profileXpIcon} loading="lazy" />
+            <span className={styles.profileXpUnit}>xp</span>
           </p>
           <button type="button" className={styles.historyButton} onClick={() => setIsHistoryOpen(true)}>
             <span className={styles.historyButtonIcon} aria-hidden="true" />

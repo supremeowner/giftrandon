@@ -280,6 +280,18 @@ export const GiftsPage: FC = () => {
     };
   }, [isSpinning, startAutoScroll, stopAutoScroll]);
 
+  useEffect(() => {
+    if (isSpinning) {
+      document.body.dataset.rouletteSpinLock = "1";
+    } else {
+      delete document.body.dataset.rouletteSpinLock;
+    }
+
+    return () => {
+      delete document.body.dataset.rouletteSpinLock;
+    };
+  }, [isSpinning]);
+
   const startSpin = (mode: "demo" | "paid") => {
     if (isSpinning) return;
 

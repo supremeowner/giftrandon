@@ -1,4 +1,4 @@
-import { FC, useLayoutEffect, useRef, useState } from "react";
+import { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
 import starBadgeSvg from "@/assets/gifts/star-badge.svg";
 
 interface PriceTabsProps {
@@ -13,6 +13,7 @@ export const PriceTabs: FC<PriceTabsProps> = ({ prices, selectedPrice, onSelect,
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const isScrollGestureRef = useRef(false);
+  const lastTouchMoveAtRef = useRef(0);
   const [activeStyle, setActiveStyle] = useState<{ width: number; left: number }>({ width: 0, left: 0 });
   const [isAnimated, setIsAnimated] = useState(false);
 
@@ -49,6 +50,19 @@ export const PriceTabs: FC<PriceTabsProps> = ({ prices, selectedPrice, onSelect,
     return () => window.removeEventListener("resize", updateActiveStyle);
   }, [prices, selectedPrice]);
 
+  useEffect(() => {
+    const handleTouchMove = () => {
+      lastTouchMoveAtRef.current = Date.now();
+      isScrollGestureRef.current = true;
+    };
+
+    document.addEventListener("touchmove", handleTouchMove, { passive: true, capture: true });
+
+    return () => {
+      document.removeEventListener("touchmove", handleTouchMove, true);
+    };
+  }, []);
+
   return (
     <div className="tg-tabs" ref={tabsRef}>
       <span
@@ -82,13 +96,21 @@ export const PriceTabs: FC<PriceTabsProps> = ({ prices, selectedPrice, onSelect,
               const dy = Math.abs(touch.clientY - start.y);
               if (dx > 8 || dy > 8) {
                 isScrollGestureRef.current = true;
+                lastTouchMoveAtRef.current = Date.now();
               }
+            }}
+            onTouchEnd={() => {
+              window.setTimeout(() => {
+                isScrollGestureRef.current = false;
+              }, 0);
             }}
             onTouchCancel={() => {
               isScrollGestureRef.current = true;
+              lastTouchMoveAtRef.current = Date.now();
             }}
             onClick={(event) => {
-              if (isScrollGestureRef.current) {
+              const recentlyScrolled = Date.now() - lastTouchMoveAtRef.current < 260;
+              if (isScrollGestureRef.current || recentlyScrolled) {
                 event.preventDefault();
                 return;
               }

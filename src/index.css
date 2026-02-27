@@ -1595,3 +1595,29 @@ html, body, #root {
   margin-left: 0 !important;
   line-height: 1 !important;
 }
+
+/* === Final lock: star tabs must not darken on touch/scroll === */
+.tg-tab,
+.tg-tab * {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.tg-tab {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  transition: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+.tg-tab:is(:hover, :active, :focus, :focus-visible),
+.tg-tab:is(:hover, :active, :focus, :focus-visible) .tg-tab__text,
+.tg-tab:is(:hover, :active, :focus, :focus-visible) .tg-tab__star {
+  background: transparent !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
