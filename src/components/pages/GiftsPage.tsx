@@ -10,7 +10,7 @@ import { useRequiredTelegramWebApp } from "@/contexts/TelegramWebAppContext";
 import { buildApiUrl } from "@/lib/api";
 import { fetchTelegramJson } from "@/lib/telegramApi";
 import loadingAnimation from "@/assets/gifts/animation/loading.json";
-import { GIFTS_CATALOG, GIFT_IMAGE_SOURCES, type GiftId } from "@/components/gifts/constants";
+import { GIFTS_CATALOG, type GiftId } from "@/components/gifts/constants";
 
 const prices = [25, 50, 100];
 
@@ -114,21 +114,7 @@ export const GiftsPage: FC = () => {
   const [wonPrize, setWonPrize] = useState<{ id: GiftId; icon: GiftIcon; label: string; price: number } | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [loadedIcons, setLoadedIcons] = useState<Record<string, boolean>>(() => {
-    if (typeof Image === "undefined") {
-      return {};
-    }
-    const preloaded: Record<string, boolean> = {};
-    GIFT_IMAGE_SOURCES.forEach((src) => {
-      if (!src) return;
-      const img = new Image();
-      img.src = src;
-      if (img.complete && img.naturalWidth > 0) {
-        preloaded[src] = true;
-      }
-    });
-    return preloaded;
-  });
+  const [loadedIcons, setLoadedIcons] = useState<Record<string, boolean>>({});
   const rouletteRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -187,43 +173,6 @@ export const GiftsPage: FC = () => {
   const markIconLoaded = useCallback((src: string) => {
     setLoadedIcons((prev) => (prev[src] ? prev : { ...prev, [src]: true }));
   }, []);
-
-  useEffect(() => {
-    if (typeof Image === "undefined") return;
-    let isCancelled = false;
-    const images: HTMLImageElement[] = [];
-
-    GIFT_IMAGE_SOURCES.forEach((src) => {
-      if (!src) return;
-      const image = new Image();
-      image.src = src;
-
-      const markLoaded = () => {
-        if (!isCancelled) {
-          markIconLoaded(src);
-        }
-      };
-
-      if (image.complete && image.naturalWidth > 0) {
-        markLoaded();
-        return;
-      }
-
-      image.onload = markLoaded;
-      image.onerror = () => {
-        // keep skeleton visible
-      };
-      images.push(image);
-    });
-
-    return () => {
-      isCancelled = true;
-      images.forEach((image) => {
-        image.onload = null;
-        image.onerror = null;
-      });
-    };
-  }, [markIconLoaded]);
 
   const clearTimers = () => {
     if (spinTimeoutRef.current) {

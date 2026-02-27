@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { TelegramWebAppProvider } from "./contexts/TelegramWebAppProvider";
-import { GIFT_IMAGE_SOURCES } from "./components/gifts/constants";
+import { CRITICAL_GIFT_IMAGE_SOURCES, SECONDARY_GIFT_IMAGE_SOURCES } from "./components/gifts/constants";
 import ButtonIconSvg from "@/assets/gifts/svg-image-1.svg";
 import "./index.css";
 
@@ -17,7 +17,43 @@ const preloadImages = (images: string[]) => {
   });
 };
 
-preloadImages([...GIFT_IMAGE_SOURCES, ButtonIconSvg]);
+const preloadImagesIdle = (images: string[]) => {
+  if (typeof Image === "undefined" || typeof window === "undefined") return;
+  const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+  if (connection?.saveData) return;
+
+  const queue = images.filter(Boolean);
+  if (queue.length === 0) return;
+
+  const schedule = (callback: (deadline: IdleDeadline) => void) => {
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(callback, { timeout: 1500 });
+    } else {
+      window.setTimeout(() => {
+        callback({
+          didTimeout: true,
+          timeRemaining: () => 0,
+        });
+      }, 800);
+    }
+  };
+
+  let index = 0;
+  const run = (deadline: IdleDeadline) => {
+    while (index < queue.length && (deadline.timeRemaining() > 6 || deadline.didTimeout)) {
+      const src = queue[index++];
+      const image = new Image();
+      image.decoding = "async";
+      image.src = src;
+    }
+
+    if (index < queue.length) {
+      schedule(run);
+    }
+  };
+
+  schedule(run);
+};
 
 export const RootApp = () => {
   useEffect(() => {
@@ -43,6 +79,9 @@ export const RootApp = () => {
     document.addEventListener("copy", handleCopy, true);
     document.addEventListener("gesturestart", handleGestureStart, true);
     document.addEventListener("touchmove", handleMultiTouchMove, { passive: false, capture: true });
+
+    preloadImages([...CRITICAL_GIFT_IMAGE_SOURCES, ButtonIconSvg]);
+    preloadImagesIdle(SECONDARY_GIFT_IMAGE_SOURCES);
 
     return () => {
       document.removeEventListener("contextmenu", handleContextMenu, true);
